@@ -1,0 +1,25 @@
+{
+  "name": "Complexity Model",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "mounts": [
+    "source=uv-cache,target=/home/vscode/.cache/uv,type=volume",
+    "source=hf-cache,target=/home/vscode/.cache/huggingface,type=volume",
+    "source=complexity-model-venv,target=${containerWorkspaceFolder}/.venv,type=volume"
+  ],
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.cache && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/.venv && uv sync",
+  "remoteUser": "vscode"
+}

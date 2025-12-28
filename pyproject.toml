@@ -1,0 +1,13 @@
+[project]
+name = "js-complexity-model"
+version = "0.1.0"
+description = "A code complexity prediction model repo"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "datasets>=4.4.2",
+    "dotenv>=0.9.9",
+    "huggingface-hub>=1.2.3",
+    "ipykernel>=7.1.0",
+    "tqdm>=4.67.1",
+]

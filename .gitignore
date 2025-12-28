@@ -1,0 +1,19 @@
+# Data files 
+data/*.jsonl
+data/*.csv
+data/raw/
+data/processed/
+
+# API keys and Secrets
+.env
+config.json
+
+# Python specific
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Environment-specific / Temporary
+.DS_Store
+*.log
