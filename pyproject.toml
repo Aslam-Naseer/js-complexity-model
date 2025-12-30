@@ -9,5 +9,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "huggingface-hub>=1.2.3",
     "ipykernel>=7.1.0",
+    "lizard>=1.19.0",
+    "matplotlib>=3.10.8",
     "tqdm>=4.67.1",
 ]
