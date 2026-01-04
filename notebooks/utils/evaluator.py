@@ -15,7 +15,7 @@ RESET = "\033[0m"
 COLOR_MAP = {"red": RED, "orange": YELLOW, "green": GREEN}
 
 WORKERS = 1
-DEFAULT_SIZE = 200
+DEFAULT_SIZE = 500
 
 
 class Tester:
@@ -54,7 +54,7 @@ class Tester:
 
     def run_datapoint(self, i):
         datapoint = self.data[i]
-        value = self.predictor(datapoint["code"])
+        value = self.predictor(datapoint)
         guess = self.post_process(value)
         truth = datapoint["complexity"]
         error = abs(guess - truth)
