@@ -64,14 +64,3 @@ def sanitize_code(code):
         return convert_to_arrow(code)
 
     return code
-
-
-def preprocess_js_code(original_code, max_len=2000):
-
-    code = original_code.strip()
-    code = re.sub(r"\s+", " ", code)
-
-    if len(code) > max_len:
-        code = code[:max_len]
-
-    return code
