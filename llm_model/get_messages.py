@@ -1,4 +1,4 @@
-from .sanitize_code import sanitize_code
+from llm_model.sanitize_code import sanitize_code
 
 SYSTEM_PROMPT = "You are a static analysis expert. Analyze the code metrics and calculate the cyclomatic complexity."
 

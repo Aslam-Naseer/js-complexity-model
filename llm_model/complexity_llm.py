@@ -1,4 +1,3 @@
-import re
 import modal
 from modal import Volume, Image
 
@@ -27,6 +26,7 @@ hf_cache_volume = Volume.from_name("hf-hub-cache", create_if_missing=True)
     secrets=secrets,
     gpu=GPU,
     timeout=1800,
+    scaledown_window=450,
     min_containers=MIN_CONTAINERS,
     volumes={CACHE_DIR: hf_cache_volume},
 )
@@ -70,25 +70,16 @@ class ComplexityLLM:
         )
         inputs = self.tokenizer(prompt_str, return_tensors="pt").to("cuda")
 
-        # 2. Generate
         with torch.no_grad():
             output_ids = self.fine_tuned_model.generate(
                 **inputs, max_new_tokens=128, pad_token_id=self.tokenizer.eos_token_id
             )
 
-        # 3. Decode the full response
         prompt_len = inputs["input_ids"].shape[1]
         generated_ids = output_ids[0, prompt_len:]
         full_response = self.tokenizer.decode(
             generated_ids, skip_special_tokens=True)
 
-        # 4. PRINT everything (as requested)
-        print("--- Full Model Output ---")
-        print(full_response)
-        print("-------------------------")
-
-        # 5. Extract and RETURN only the score
-        # This regex looks for "Complexity Score:" followed by whitespace and a number (e.g. 9.1)
         match = re.search(
             r"Complexity Score:\s*(\d+(?:\.\d+)?)", full_response)
 
