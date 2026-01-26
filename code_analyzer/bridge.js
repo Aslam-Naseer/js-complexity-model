@@ -1,4 +1,4 @@
-import codeAnalyzer from "./index.js";
+import codeAnalyzer from "./src/index.js";
 
 const codeString = process.argv[2];
 
