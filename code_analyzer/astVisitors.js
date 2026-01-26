@@ -16,7 +16,6 @@ entryHandlerMap.addHandlers(FUNCTION_NODES, [
   entryHandlers.addFunctionDeclarator,
   entryHandlers.enterFunctionNode,
   entryHandlers.enterScope,
-  entryHandlers.addFunctionParams,
 ]);
 entryHandlerMap.addHandlers(NESTING_NODES, [
   entryHandlers.incrementNestingDepth,
@@ -30,23 +29,7 @@ entryHandlerMap.addHandlers(
   ["VariableDeclarator"],
   [entryHandlers.processVariableDeclarator],
 );
-entryHandlerMap.addHandlers(
-  ["ImportDeclaration"],
-  [entryHandlers.processImportDeclaration],
-);
-entryHandlerMap.addHandlers(
-  ["ObjectExpression"],
-  [entryHandlers.processObjectExpression],
-);
-entryHandlerMap.addHandlers(
-  ["ArrayExpression"],
-  [entryHandlers.processArrayExpression],
-);
-entryHandlerMap.addHandlers(
-  ["SpreadElement"],
-  [entryHandlers.processSpreadElement],
-);
-entryHandlerMap.addHandlers(["Identifier"], [entryHandlers.processIdentifier]);
+
 entryHandlerMap.addHandlers(["BlockStatement"], [entryHandlers.enterScope]);
 
 exitHandlerMap.addHandlers(FUNCTION_NODES, [
@@ -57,10 +40,7 @@ exitHandlerMap.addHandlers(NESTING_NODES, [
   exitHandlers.decrementNestingDepth,
   exitHandlers.exitScope,
 ]);
-exitHandlerMap.addHandlers(
-  ["ExportNamedDeclaration"],
-  [exitHandlers.addExportReference],
-);
+
 exitHandlerMap.addHandlers(["BlockStatement"], [exitHandlers.exitScope]);
 
 // --- Export the Maps ---

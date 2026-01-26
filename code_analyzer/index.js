@@ -1,6 +1,5 @@
 import { parse } from "acorn";
 import { entryHandlerMap, exitHandlerMap } from "./astVisitors.js";
-import { SymbolTable } from "../structures/symbolTable.js"; // rem
 import { FunctionStore } from "./functionStore.js";
 
 const traverse = (node, context) => {
@@ -36,11 +35,9 @@ const codeAnalyzer = (code) => {
   });
 
   const functionStore = new FunctionStore(code);
-  const symbolTable = new SymbolTable(); // rem
 
   const initialContext = {
     functionStore,
-    symbolTable, // rem
     code,
     nestingDepth: 0,
     parent: null,
@@ -48,7 +45,8 @@ const codeAnalyzer = (code) => {
   };
 
   traverse(ast, initialContext);
-  return { ast, functionStore, symbolTable, code }; // rem---
+  const details = functionStore.getFunctionDetails();
+  return details;
 };
 
 export default codeAnalyzer;

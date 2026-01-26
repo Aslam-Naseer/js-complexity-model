@@ -23,6 +23,6 @@
     "source=,target=${containerWorkspaceFolder}/code_analyzer/node_modules,type=volume",
     "source=complexity-model-venv,target=${containerWorkspaceFolder}/.venv,type=volume"
   ],
-  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.cache && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/.venv && uv sync",
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.cache && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/.venv && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/code_analyzer/node_modules && uv sync",
   "remoteUser": "vscode"
 }

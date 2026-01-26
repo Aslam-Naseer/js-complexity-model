@@ -8,7 +8,6 @@ export class FunctionStore {
     this.details = [];
     this.stack = [];
     this.lines = code.split("\n");
-    this.idCountMap = new Map();
   }
 
   isGlobalScope = () => {
@@ -26,69 +25,19 @@ export class FunctionStore {
     return "anonymous";
   };
 
-  generateId = (node, parent) => {
-    // rem
-    let name = this.getFunctionName(node, parent);
-    if (name.startsWith("anonymous")) {
-      name = "anonymous";
-    }
-    const params =
-      node.params?.map((p) => {
-        if (p.type === "Identifier") return p.name;
-        if (p.type === "AssignmentPattern" && p.left.type === "Identifier")
-          return `${p.left.name}=default`;
-        if (p.type === "RestElement" && p.argument.type === "Identifier")
-          return `...${p.argument.name}`;
-        return "param";
-      }) || [];
-
-    const scopeNames = this.stack.map((fn) => fn.name).join("::");
-    const signature = `${
-      scopeNames ? scopeNames + "::" : ""
-    }${name}(${params.join(",")})`;
-
-    let hash = 0;
-    for (let i = 0; i < signature.length; i++) {
-      hash = (hash * 31 + signature.charCodeAt(i)) >>> 0;
-    }
-
-    const baseId = `${name}_${hash.toString(36)}`;
-    const count = this.idCountMap.get(baseId) || 0;
-    this.idCountMap.set(baseId, count + 1);
-
-    if (count > 0) {
-      return `${baseId}${count + 1}`;
-    }
-
-    return baseId;
-  };
-
   getCurrentFunction = () => {
     if (this.isGlobalScope()) return null;
 
     return this.stack[this.stack.length - 1];
   };
 
-  getFunctionDetailsForAPI = () => {
+  getFunctionDetails = () => {
     const formatter = (func) => {
-      func.lintIssues.sort(
-        (a, b) => a.range.startLineNumber - b.range.startLineNumber,
-      );
-
       return {
-        id: func.id, // rem
         name: func.name,
         loc: func.source.loc,
         code: func.source.code,
-
-        analysis: {
-          prediction: null,
-          features: func.analysis.features,
-        },
-
-        lintIssues: func.lintIssues,
-        suggestion: null,
-
+        features: func.analysis.features,
         nestedFunctions: func.nestedFunctions.map(formatter),
       };
     };
@@ -99,7 +48,6 @@ export class FunctionStore {
   processFunctionNode = (node, parent) => {
     const newFunctionDetail = {
       name: this.getFunctionName(node, parent),
-      id: this.generateId(node, parent),
 
       source: {
         loc: { start: node.loc.start.line, end: node.loc.end.line },
@@ -120,7 +68,6 @@ export class FunctionStore {
         },
       },
 
-      lintIssues: [], // rem
       nestedFunctions: [],
 
       currentDepth: 0,
