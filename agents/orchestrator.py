@@ -1,5 +1,5 @@
 from agents.base_agent import Agent
-from agents.ensemble_agent import EnsembleAgent
+from agents.evaluator import Evaluator
 from utils.code_parser import flatten_functions
 from code_analyzer import analyze
 
@@ -11,7 +11,7 @@ class ComplexityOrchestrator(Agent):
     def __init__(self):
         super().__init__()  # Ensure base Agent init is called
         self.log("Initializing dependencies...")
-        self.agent = EnsembleAgent()
+        self.agent = Evaluator()
         self.log("Complexity Orchestrator is ready.")
         self.log("")
 

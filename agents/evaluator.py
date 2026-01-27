@@ -4,19 +4,19 @@ from agents.llm_agent import LLMAgent
 from agents.nn_agent import NNAgent
 
 
-class EnsembleAgent(Agent):
-    name = "JUDGE"
+class Evaluator(Agent):
+    name = "EVALUATOR"
     color = Agent.MAGENTA
 
     def __init__(self, nn_bias=0.3, llm_bias=0.7):
         super().__init__()
-        self.log("Initializing Ensemble Agent...")
+        self.log("Initializing Evaluation Agent...")
         self.llm_agent = LLMAgent()
         self.nn_agent = NNAgent()
 
         self.nn_bias = nn_bias
         self.llm_bias = llm_bias
-        self.log("Ensemble Agent ready.")
+        self.log("Evaluator is ready.")
 
     def predict(self, code_str: Optional[str] = None, features: Optional[dict] = None):
         """
@@ -28,7 +28,7 @@ class EnsembleAgent(Agent):
 
         if code_str:
             try:
-                llm_score = self.llm_agent.predict(code_str)
+                llm_score = self.llm_agent.predict_mock(code_str)
             except Exception as e:
                 self.log(f"LLM Agent failed: {e}", is_error=True)
         else:

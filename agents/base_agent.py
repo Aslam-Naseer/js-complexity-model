@@ -25,9 +25,9 @@ class Agent:
             return
 
         # 1. Format the Name Tag (Centered or Left Aligned)
-        formatted_name = f" {self.name:^{self.NAME_WIDTH}} "
+        formatted_name = f" {self.name:{self.NAME_WIDTH}} "
 
-        # 2. Build the Tag (e.g., "[  ORCHESTRATOR  ]")
+        # 2. Build the Tag
         if is_error:
             # Error: Red Tag, Red Message
             tag = f"{self.RED}[{formatted_name}]{self.RESET}"
