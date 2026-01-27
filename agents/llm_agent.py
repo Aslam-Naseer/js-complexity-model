@@ -5,17 +5,25 @@ from llm_model.get_messages import get_messages
 from nn_model.artifacts.test_res import test_res
 
 
-class LLM_Agent(Agent):
-    name = "LLM Agent"
+class LLMAgent(Agent):
+    name = "LLM MODEL"
     color = Agent.CYAN
 
     def __init__(self):
         self.log("LLM Agent is initializing - connecting to modal")
-        ComplexityLLM = modal.Cls.from_name(
-            "complexity-service", "ComplexityLLM")
-        self.complexity_llm = ComplexityLLM()
+        try:
+            ComplexityLLM = modal.Cls.from_name(
+                "complexity-service", "ComplexityLLM")
+            self.complexity_llm = ComplexityLLM()
 
-    def predict(self, code) -> float:
+            self.log("LLM Agent is ready and connected to modal service")
+        except Exception as e:
+            self.log(f"Failed to connect to modal service: {e}", is_error=True)
+
+    def predict(self, code: str):
+        if not code:
+            return None
+
         self.log("LLM Agent is calling remote fine-tuned model")
         messages = get_messages(code)
         result = self.complexity_llm.complexity.remote(messages)

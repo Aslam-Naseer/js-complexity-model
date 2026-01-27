@@ -2,33 +2,39 @@ import logging
 
 
 class Agent:
-    """
-    An abstract superclass for Agents
-    Used to log messages in a way that can identify each Agent
-    """
-
-    # Foreground colors
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    BLUE = '\033[34m'
-    MAGENTA = '\033[35m'
-    CYAN = '\033[36m'
-    WHITE = '\033[37m'
-
-    # Background color
-    BG_BLACK = '\033[40m'
-
-    # Reset code to return to default color
+    # --- Bright, Readable Colors ---
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    MAGENTA = '\033[95m'
+    RED = '\033[91m'
     RESET = '\033[0m'
 
-    name: str = ""
-    color: str = '\033[37m'
+    # Configuration
+    NAME_WIDTH = 12  # Fixed width for all agent names
+    name: str = "BASE"
+    color: str = CYAN
 
-    def log(self, message):
-        """
-        Log this as an info message, identifying the agent
-        """
-        color_code = self.BG_BLACK + self.color
-        message = f"[{self.name}] {message}"
-        logging.info(color_code + message + self.RESET)
+    def __init__(self):
+        logging.basicConfig(format='%(message)s', level=logging.INFO)
+
+    def log(self, message, is_error=False):
+        # If empty message, print blank line
+        if not message:
+            logging.info("")
+            return
+
+        # 1. Format the Name Tag (Centered or Left Aligned)
+        formatted_name = f" {self.name:^{self.NAME_WIDTH}} "
+
+        # 2. Build the Tag (e.g., "[  ORCHESTRATOR  ]")
+        if is_error:
+            # Error: Red Tag, Red Message
+            tag = f"{self.RED}[{formatted_name}]{self.RESET}"
+            content = f"{self.RED}{message}{self.RESET}"
+        else:
+            # Normal: Agent Color Tag, White Message (Cleaner look)
+            tag = f"{self.color}[{formatted_name}]{self.RESET}"
+            content = message
+
+        logging.info(f"{tag}  {content}")

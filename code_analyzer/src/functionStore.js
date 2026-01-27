@@ -20,7 +20,7 @@ export class FunctionStore {
       return parent.id.name;
     }
     if (node.loc && node.loc.start) {
-      return `anonymous at L${node.loc.start.line}`;
+      return `anonymous_at_L${node.loc.start.line}`;
     }
     return "anonymous";
   };

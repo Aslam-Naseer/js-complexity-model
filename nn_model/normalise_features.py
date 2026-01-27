@@ -1,7 +1,11 @@
 import numpy as np
 
-feature_cols = ['parameter_count', 'statement_count',
-                'variable_count', 'max_nesting_depth']
+feature_cols = [
+    'parameterCount',
+    'statementCount',
+    'variableCount',
+    'maxNestingDepth'
+]
 
 
 def normalise_features(data, scaler):

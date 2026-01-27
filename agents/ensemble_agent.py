@@ -1,117 +1,64 @@
+from typing import Optional
 from agents.base_agent import Agent
-from agents.llm_agent import LLM_Agent
-from agents.nn_agent import NN_Agent
-
-NN_BIAS = 0.3
-LLM_BIAS = 0.7
-
-feature_cols = ['parameter_count', 'statement_count',
-                'variable_count', 'max_nesting_depth']
+from agents.llm_agent import LLMAgent
+from agents.nn_agent import NNAgent
 
 
-class Ensemble_Agent(Agent):
-    name = "Ensemble Agent"
-    color = Agent.YELLOW
+class EnsembleAgent(Agent):
+    name = "JUDGE"
+    color = Agent.MAGENTA
 
-    def __init__(self):
+    def __init__(self, nn_bias=0.3, llm_bias=0.7):
+        super().__init__()
         self.log("Initializing Ensemble Agent...")
-        self.llm_agent = LLM_Agent()
-        self.nn_agent = NN_Agent()
+        self.llm_agent = LLMAgent()
+        self.nn_agent = NNAgent()
+
+        self.nn_bias = nn_bias
+        self.llm_bias = llm_bias
         self.log("Ensemble Agent ready.")
 
-    def predict(self, data):
-        has_nn_data = all(col in data for col in feature_cols)
-        has_llm_data = 'code' in data and data['code']
-
+    def predict(self, code_str: Optional[str] = None, features: Optional[dict] = None):
+        """
+        Unified predict method. 
+        Accepts code and/or features explicitly.
+        """
         nn_score = None
         llm_score = None
 
-        if has_nn_data:
-            nn_score = self.nn_agent.predict(data)
+        if code_str:
+            try:
+                llm_score = self.llm_agent.predict(code_str)
+            except Exception as e:
+                self.log(f"LLM Agent failed: {e}", is_error=True)
         else:
-            self.log("Skipping NN: Missing feature columns.")
+            self.log("Skipping LLM: No code string provided.")
 
-        if has_llm_data:
-            llm_score = self.llm_agent.predict(data['code'])
+        if features:
+            try:
+                nn_score = self.nn_agent.predict(features)
+            except Exception as e:
+                self.log(f"NN Agent failed: {e}", is_error=True)
         else:
-            self.log("Skipping LLM: Missing 'code' field.")
+            self.log("Skipping NN: No feature dictionary provided.")
+
+        return self._calculate_weighted_score(llm_score, nn_score)
+
+    def _calculate_weighted_score(self, llm_score, nn_score):
+        """Helper to keep the math clean and separate."""
 
         if nn_score is not None and llm_score is not None:
-            final_score = (NN_BIAS * nn_score) + (LLM_BIAS * llm_score)
+            final = (self.nn_bias * nn_score) + (self.llm_bias * llm_score)
+            self.log(f"Combined Score: {final:.2f}")
+            return round(final, 2)
 
         elif nn_score is not None:
-            final_score = nn_score
+            self.log(f"Using NN Score only: {nn_score}")
+            return round(nn_score, 2)
 
         elif llm_score is not None:
-            final_score = llm_score
+            self.log(f"Using LLM Score only: {llm_score}")
+            return round(llm_score, 2)
 
         else:
-            self.log("Error: Insufficient data for prediction.")
             return 0.0
-
-        self.log(
-            f"Ensemble Agent completed - predicting Complexity = {final_score:.2f}")
-        return round(final_score, 1)
-
-
-if __name__ == "__main__":
-    import logging
-    logging.basicConfig(level=logging.INFO)
-
-    print("--- STARTING TEST ---")
-
-    # 1. Define Test Dataset (using JavaScript codes)
-    test_dataset = [
-        {
-            "id": 1,
-            "description": "CASE 1: Full Data (Complex JS)",
-            "code": """
-                function calculatePrimes(n) {
-                    const primes = [];
-                    for (let i = 2; i < n; i++) {
-                        let isPrime = true;
-                        for (let j = 2; j <= Math.sqrt(i); j++) {
-                            if (i % j === 0) isPrime = false;
-                        }
-                        if (isPrime) primes.push(i);
-                    }
-                    return primes;
-                }
-            """,
-            "parameter_count": 1,
-            "statement_count": 8,
-            "variable_count": 3,
-            "max_nesting_depth": 3
-        },
-        {
-            "id": 2,
-            "description": "CASE 2: NN Data Only (Missing Code)",
-            # "code" is missing intentionally
-            "parameter_count": 0,
-            "statement_count": 1,
-            "variable_count": 0,
-            "max_nesting_depth": 0
-        },
-        {
-            "id": 3,
-            "description": "CASE 3: LLM Data Only (Missing Features)",
-            "code": "const add = (a, b) => a + b;",
-            # Feature columns are missing intentionally
-        }
-    ]
-
-    # 2. Initialize Agent
-    agent = Ensemble_Agent()
-    print("-" * 30)
-
-    # 3. Run Tests
-    for data in test_dataset:
-        print(f"\nTesting: {data['description']}")
-
-        try:
-            score = agent.predict(data)
-            print(f"Result -> Score: {score}")
-        except Exception as e:
-            logging.error(f"Test Failed: {e}")
-
-    print("\n--- TEST COMPLETE ---")

@@ -5,13 +5,17 @@ from agents.base_agent import Agent
 from nn_model.normalise_features import normalise_features
 from nn_model.complexity_nn import NeuralNetwork
 
-feature_cols = ['parameter_count', 'statement_count',
-                'variable_count', 'max_nesting_depth']
+feature_cols = [
+    'parameterCount',
+    'statementCount',
+    'variableCount',
+    'maxNestingDepth'
+]
 
 
-class NN_Agent(Agent):
-    name = "NN Agent"
-    color = Agent.MAGENTA
+class NNAgent(Agent):
+    name = "NEURAL NET"
+    color = Agent.YELLOW
 
     def __init__(self):
         self.log("Neural Network Agent is initializing")
@@ -24,10 +28,18 @@ class NN_Agent(Agent):
 
         self.log("Neural Network Agent is ready and weights are loaded")
 
-    def predict(self, data):
-        self.log("Neural Network Agent is starting a prediction")
+    def predict(self, features: dict):
+        if not features:
+            return None
 
-        features = normalise_features(data, self.scaler)['features']
+        if not all(col in features for col in feature_cols):
+            self.log("Missing required features for NN prediction", is_error=True)
+            return None
+
+        self.log("Neural Network Agent is starting a prediction")
+        self.log(f"Input features: {features}")
+
+        features = normalise_features(features, self.scaler)['features']
         features_tensor = torch.tensor(features, dtype=torch.float32)
         with torch.no_grad():
             prediction = self.model(features_tensor)
