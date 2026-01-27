@@ -3,6 +3,7 @@ import modal
 from agents.base_agent import Agent
 from llm_model.get_messages import get_messages
 from nn_model.artifacts.test_res import test_res
+from utils.random_number import biased_random
 
 
 class LLMAgent(Agent):
@@ -30,5 +31,16 @@ class LLMAgent(Agent):
         self.log(f"LLM Agent completed - predicting Complexity = {result:.2f}")
         return result
 
-    def predict_saved(self, idx):
-        return test_res[idx]
+    def predict_mock(self, code: str, use_index=False, idx=0):
+        if not code:
+            return None
+
+        self.log(f"MOCK LLM Agent using predict")
+        result = test_res[idx]
+
+        if not use_index:
+            result = biased_random(code)
+
+        self.log(
+            f"MOCK LLM Agent completed - Randomised Complexity = {result:.2f}")
+        return result
