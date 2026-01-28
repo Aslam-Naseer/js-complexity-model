@@ -5,8 +5,15 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from sklearn.preprocessing import StandardScaler
 
-feature_cols = ['parameter_count', 'statement_count',
-                'variable_count', 'max_nesting_depth']
+feature_cols = [
+    'param_count',
+    'local_statement_count',
+    'total_statement_count',
+    'local_variable_count',
+    'total_variable_count',
+    'local_nesting_depth',
+    'total_nesting_depth'
+]
 
 
 class NeuralNetwork(nn.Module):
@@ -78,7 +85,7 @@ def train_model(num_epochs, train_ds, val_ds):
             loss = criterion(outputs, labels)
             val_loss += loss.item()
 
-        if (epoch + 1) % 10 == 0:
+        if (epoch + 1) % 50 == 0:
             print(f'Epoch [{epoch+1}/{num_epochs}], '
                   f'Train Loss: {train_loss/len(train_loader):.4f}, '
                   f'Val Loss: {val_loss/len(val_loader):.4f}')
