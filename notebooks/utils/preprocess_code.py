@@ -34,13 +34,13 @@ def sanitize_js_code(code):
 
 
 def convert_to_arrow(js_code):
-    # Added ^\s* to ensure it only matches if the code STARTS with this pattern
-    # Removed (return\s+)? because if it starts with 'return', it's not a top-level function declaration
+    """
+    Converts function expressions to arrow function syntax.
+    """
+    # Pattern matches function expressions at the start of the code
     pattern = r"^\s*(async\s+)?function\s*([a-zA-Z0-9_$]+)?\s*\((.*?)\)\s*\{"
 
     def replace_func(match):
-        # We keep the groups as they were, but prefix is now always empty
-        # because a string starting with 'return' won't match this pattern.
         is_async = match.group(1) if match.group(1) else ""
         name = match.group(2)
         params = match.group(3)
@@ -55,12 +55,16 @@ def convert_to_arrow(js_code):
 
 
 def sanitize_code(code):
+    """
+    Main sanitization function that coordinates conversion and cleaning.
+    """
     stripped_code = code.strip()
+
     is_function_expr = re.match(
         r'^(return\s+)?(async\s+)?function', stripped_code)
 
-    code = sanitize_js_code(code)
     if is_function_expr or random.random() < 0.55:
-        return convert_to_arrow(code)
+        code = convert_to_arrow(code)
 
+    code = sanitize_js_code(code)
     return code

@@ -12,6 +12,7 @@ def analyze(code: str):
         )
 
         if result.returncode != 0:
+            print(result.stderr)
             return None
 
         return json.loads(result.stdout)
