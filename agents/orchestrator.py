@@ -1,6 +1,7 @@
 from agents.base_agent import Agent
 from agents.evaluator import Evaluator
 from utils.code_parser import flatten_functions
+from utils.feature_extractor import extract_full_features
 from code_analyzer import analyze
 
 
@@ -53,7 +54,7 @@ class ComplexityOrchestrator(Agent):
             self.log(f"[{i}/{count}] Scoring function: '{func_name}'...")
 
             code = func_node.get('code')
-            features = func_node.get('features')
+            features = extract_full_features(func_node)
 
             try:
                 score = self.agent.predict(code_str=code, features=features)

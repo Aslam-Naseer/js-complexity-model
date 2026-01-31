@@ -6,10 +6,13 @@ from nn_model.normalise_features import normalise_features
 from nn_model.complexity_nn import NeuralNetwork
 
 feature_cols = [
-    'parameterCount',
-    'statementCount',
-    'variableCount',
-    'maxNestingDepth'
+    'param_count',
+    'local_statement_count',
+    'total_statement_count',
+    'local_variable_count',
+    'total_variable_count',
+    'local_nesting_depth',
+    'total_nesting_depth'
 ]
 
 
@@ -37,13 +40,12 @@ class NNAgent(Agent):
             return None
 
         self.log("Neural Network Agent is starting a prediction")
-        self.log(f"Input features: {features}")
 
         features = normalise_features(features, self.scaler)['features']
         features_tensor = torch.tensor(features, dtype=torch.float32)
         with torch.no_grad():
             prediction = self.model(features_tensor)
             self.log(
-                f"Neural Network Agent completed - predicting Complexity = {prediction[0].item():.2f}")
+                f"NN Agent completed - predicting Complexity = {prediction[0].item():.2f}")
 
         return prediction[0].item()

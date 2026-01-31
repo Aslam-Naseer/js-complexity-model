@@ -1,12 +1,5 @@
 import numpy as np
 
-# feature_cols = ['parameterCount', 'statementCount',
-#                 'variableCount', 'maxNestingDepth']
-
-# feature_cols_camel = ['parameter_count', 'statement_count',
-#                       'variable_count', 'max_nesting_depth']
-
-
 cols = [
     'param_count',
     'local_statement_count',
