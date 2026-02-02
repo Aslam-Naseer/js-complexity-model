@@ -4,8 +4,13 @@ import queue
 import threading
 import time
 
+from examples import SIMPLE_CASE, MODERATE_CASE, COMPLEX_CASE, DEFAULT_CODE_SNIPPET
 from utils.ansi_to_html import ansi_to_html
+from utils.get_label import get_complexity_label
 from agents.orchestrator import ComplexityOrchestrator
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class QueueHandler(logging.Handler):
@@ -84,7 +89,7 @@ class ComplexityApp:
 
         if status == "success":
             # Format for Dataframe: [[Func, Score], [Func, Score]]
-            table_data = [[item['function'], item['complexity']]
+            table_data = [[item['function'], item['complexity'], get_complexity_label(item['complexity'])]
                           for item in final_data]
 
             yield logs_accumulated, table_data
@@ -95,28 +100,59 @@ class ComplexityApp:
 
 app_logic = ComplexityApp()
 
+
+example_map = {
+    "Simple case": SIMPLE_CASE,
+    "Moderate case": MODERATE_CASE,
+    "Complex case": COMPLEX_CASE,
+    "Test All cases": DEFAULT_CODE_SNIPPET
+}
+
+
+def load_example(choice):
+    return example_map.get(choice, "")
+
+
 with gr.Blocks(title="Complexity Analyzer") as ui:
     gr.Markdown("## JS Complexity Analysis Model")
 
-    with gr.Row():
-        with gr.Column(scale=1):
+    with gr.Column(scale=1):
+        with gr.Group():
             code_input = gr.Code(language="javascript",
-                                 label="Source Code", lines=20, max_lines=20)
+                                 label="Source Code", lines=24, max_lines=24)
+            dropdown = gr.Dropdown(
+                choices=list(example_map.keys()),
+                label="",
+                value="Test All cases",
+                filterable=False
+            )
+
             btn_run = gr.Button("Analyze", variant="primary")
 
-        with gr.Column(scale=1):
-            result_table = gr.Dataframe(
-                headers=["Function Name", "Complexity Score"],
-                datatype=["str", "number"],
-            )
-            logs_output = gr.HTML(
-                label="Real-time Execution Logs", elem_id="logs")
+        result_table = gr.Dataframe(
+            headers=["Function Name", "Complexity Score", "Label"],
+            datatype=["str", "number", "str"],
+        )
 
+        logs_output = gr.HTML(
+            label="Real-time Execution Logs", elem_id="logs")
+
+    dropdown.change(load_example, inputs=dropdown, outputs=code_input)
+    ui.load(lambda: DEFAULT_CODE_SNIPPET, outputs=code_input)
     btn_run.click(
         fn=app_logic.run_analysis,
         inputs=[code_input],
         outputs=[logs_output, result_table]
     )
 
+
+CSS = """
+.gradio-container {
+  max-width: 100% !important;
+  padding: 10px 12% !important;
+}
+"""
+
+
 if __name__ == "__main__":
-    ui.launch(theme=gr.themes.Monochrome())  # type: ignore
+    ui.launch(theme=gr.themes.Monochrome(), css=CSS)  # type: ignore
