@@ -21,11 +21,20 @@ class ComplexityOrchestrator(Agent):
 
         # 1. Analyze raw structure
         try:
-            raw_structure = analyze(full_code_string)
+            result = analyze(full_code_string)
+
+            if not result or not result.get("success"):
+                error_msg = result.get(
+                    "error", "Unknown error") if result else "Analysis failed"
+                self.log(f"Code analysis failed: {error_msg}", is_error=True)
+                return []
+
+            raw_structure = result.get("data")
             if not raw_structure:
                 self.log(
                     "Analysis returned empty structure. Aborting.", is_error=True)
                 return []
+
             self.log("Raw code structure parsed successfully.")
 
         except Exception as e:

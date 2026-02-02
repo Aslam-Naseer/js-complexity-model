@@ -11,12 +11,18 @@ def analyze(code: str):
             check=True
         )
 
-        if result.returncode != 0:
-            print(result.stderr)
-            return None
+        return {"success": True, "data": json.loads(result.stdout)}
 
-        return json.loads(result.stdout)
-
+    except subprocess.CalledProcessError as e:
+        error_message = e.stderr.strip().split(
+            '\n')[0] if e.stderr else "Unknown error"
+        return {
+            "success": False,
+            "error": error_message,
+            "exit_code": e.returncode
+        }
     except Exception as e:
-        print("Error:", e)
-        return None
+        return {
+            "success": False,
+            "error": str(e)
+        }

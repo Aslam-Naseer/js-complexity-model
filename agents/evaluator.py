@@ -28,7 +28,7 @@ class Evaluator(Agent):
 
         if code_str:
             try:
-                llm_score = self.llm_agent.predict_mock(code_str)
+                llm_score = self.llm_agent.predict(code_str)
             except Exception as e:
                 self.log(f"LLM Agent failed: {e}", is_error=True)
         else:
