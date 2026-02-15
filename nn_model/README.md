@@ -39,10 +39,11 @@ The model is a Feed-Forward Neural Network (Multi-Layer Perceptron) designed for
 
 ```mermaid
 graph LR
-    Input[Input Layer (7)] --> Dense1[Dense (64) + ReLU]
-    Dense1 --> Drop[Dropout (0.2)]
-    Drop --> Dense2[Dense (32) + ReLU]
-    Dense2 --> Output[Output Layer (1)]
+    Input["Input Layer (7)"] --> Dense1["Dense (64) + ReLU"]
+    Dense1 --> Drop["Dropout (0.2)"]
+    Drop --> Dense2["Dense (32) + ReLU"]
+    Dense2 --> Output["Output Layer (1)"]
+
 ```
 
 - **Input Layer:** 7 Nodes (Corresponding to the features above).
