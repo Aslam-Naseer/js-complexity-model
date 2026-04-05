@@ -18,11 +18,15 @@
     }
   },
   "mounts": [
-    "source=uv-cache,target=/home/vscode/.cache/uv,type=volume",
-    "source=hf-cache,target=/home/vscode/.cache/huggingface,type=volume",
-    "source=,target=${containerWorkspaceFolder}/code_analyzer/node_modules,type=volume",
-    "source=complexity-model-venv,target=${containerWorkspaceFolder}/.venv,type=volume"
+    "source=shared-uv-cache,target=/home/vscode/.cache/uv,type=volume",
+    "source=shared-hf-cache,target=/home/vscode/.cache/huggingface,type=volume",
+    "source=js-model-node-modules,target=${containerWorkspaceFolder}/code_analyzer/node_modules,type=volume",
+    "source=js-model-venv,target=${containerWorkspaceFolder}/.venv,type=volume"
   ],
-  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.cache && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/.venv && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/code_analyzer/node_modules && uv sync",
+  "containerEnv": {
+    "UV_CACHE_DIR": "/home/vscode/.cache/uv",
+    "UV_LINK_MODE": "hardlink"
+  },
+  "postCreateCommand": "sudo chown -R $(whoami) /home/vscode/.cache && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/.venv && sudo chown -R vscode:vscode ${containerWorkspaceFolder}/code_analyzer/node_modules && uv sync",
   "remoteUser": "vscode"
 }

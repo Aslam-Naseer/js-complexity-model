@@ -1,51 +1,27 @@
-import joblib
-import torch
-
+import modal
 from agents.base_agent import Agent
-from nn_model.normalise_features import normalise_features
-from nn_model.complexity_nn import NeuralNetwork
-
-feature_cols = [
-    'param_count',
-    'local_statement_count',
-    'total_statement_count',
-    'local_variable_count',
-    'total_variable_count',
-    'local_nesting_depth',
-    'total_nesting_depth'
-]
 
 
 class NNAgent(Agent):
-    name = "NEURAL NET"
-    color = Agent.YELLOW
+    name = "NN MODEL"
+    color = Agent.CYAN
 
     def __init__(self):
-        self.log("Neural Network Agent is initializing")
+        self.log("NN Agent is initializing - connecting to modal")
+        try:
+            ComplexityNN = modal.Cls.from_name(
+                "nn-service", "ComplexityNN")
+            self.complexity_nn = ComplexityNN()
 
-        self.scaler = joblib.load('nn_model/artifacts/scaler.pkl')
-        self.model = NeuralNetwork(input_size=len(feature_cols))
-        self.model.load_state_dict(torch.load(
-            'nn_model/artifacts/neural_network.pth'))
-        self.model.eval()
-
-        self.log("Neural Network Agent is ready and weights are loaded")
+            self.log("NN Agent is ready and connected to modal service")
+        except Exception as e:
+            self.log(f"Failed to connect to modal service: {e}", is_error=True)
 
     def predict(self, features: dict):
         if not features:
             return None
 
-        if not all(col in features for col in feature_cols):
-            self.log("Missing required features for NN prediction", is_error=True)
-            return None
-
-        self.log("Neural Network Agent is starting a prediction")
-
-        features = normalise_features(features, self.scaler)['features']
-        features_tensor = torch.tensor(features, dtype=torch.float32)
-        with torch.no_grad():
-            prediction = self.model(features_tensor)
-            self.log(
-                f"NN Agent completed - predicting Complexity = {prediction[0].item():.2f}")
-
-        return prediction[0].item()
+        self.log(f"NN Agent is calling remote model")
+        result = self.complexity_nn.predict.remote(features)
+        self.log(f"NN Agent completed - predicting Complexity = {result:.2f}")
+        return result
