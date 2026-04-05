@@ -1,0 +1,19 @@
+# Environments and Nodes
+.venv/
+node_modules/
+__pycache__/
+
+# Heavy ML Artifacts (Stored on Modal instead)
+*.pth
+*.pkl
+*.bin
+
+# Training & Research
+train_nn.py
+notebooks/
+data/
+raw_results/
+
+# Secrets
+.env
+.modal.toml

@@ -1,8 +1,7 @@
 import modal
 
 from agents.base_agent import Agent
-from llm_model.get_messages import get_messages
-from nn_model.artifacts.test_res import test_res
+from utils.llm_utils import get_messages, test_res
 from utils.random_number import biased_random
 
 
