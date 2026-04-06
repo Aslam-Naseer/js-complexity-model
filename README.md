@@ -4,8 +4,15 @@
 ![Node.js](https://img.shields.io/badge/Node.js-Acorn-green?logo=node.js&logoColor=white)
 ![Modal](https://img.shields.io/badge/Modal-Serverless-orange)
 ![License](https://img.shields.io/badge/License-MIT-purple)
+![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)
 
 A hybrid machine learning system that analyzes JavaScript code to predict function complexity. It uses an **ensemble approach** combining a fine-tuned LLM (Qwen-4B) and a custom Neural Network to evaluate both semantic and structural code complexity.
+
+[![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-md-dark.svg)](https://huggingface.co/spaces/aslam-naseer/JS-Complexity)
+
+> **Note:** The first analysis may take ~60 seconds to "warm up" the serverless GPU containers on Modal. Subsequent requests are near-instant.
+
+---
 
 ---
 
@@ -63,7 +70,7 @@ The system isolates individual functions (and sub-functions) and provides a comp
 
 - **Python 3.10+** (Managed via \`uv\`)
 - **Node.js** (Required for the Acorn parser)
-- **Modal.com** account (For LLM inference)
+- **Modal.com** account (For models inference)
 
 ### 1. Clone the repository
 

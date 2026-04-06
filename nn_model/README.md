@@ -1,5 +1,6 @@
 # NN Agent: Structural Complexity Model
 
+![Modal](https://img.shields.io/badge/Deployed_on-Modal-orange?logo=modal&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0-red?logo=pytorch&logoColor=white)
 ![Scikit-Learn](https://img.shields.io/badge/sklearn-StandardScaler-orange?logo=scikit-learn&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-MLP-blue)
@@ -86,14 +87,26 @@ The model shows consistent convergence, with the validation loss stabilizing aro
 
 ---
 
+## ☁️ Cloud Deployment & Orchestration
+
+To support the live **Hugging Face Spaces** demo, this NN Agent is deployed as a serverless function on **Modal.com**.
+
+- **Microservice Architecture:** The Gradio app (Client) sends extracted structural features to a remote Modal container (Worker).
+- **Inference Engine:** The worker loads the `model.pth` and `scaler.pkl` artifacts into memory on-demand.
+- **Efficiency:** This decoupled approach allows the main UI to remain lightweight while offloading the PyTorch computation to specialized infrastructure.
+
+---
+
 ## 🚀 Usage
 
-To use the trained model for inference:
+### Local Inference
+
+To use the trained model for local testing or offline analysis:
 
 ```python
 import torch
 import joblib
-from model_def import NeuralNetwork # Assuming class is here
+from complexity_nn import NeuralNetwork
 
 # 1. Load Artifacts
 model = NeuralNetwork(input_size=7)
@@ -114,3 +127,7 @@ with torch.no_grad():
     prediction = model(tensor_input)
     print(f"Predicted Complexity: {prediction.item()}")
 ```
+
+### Remote Inference (Production)
+
+The production environment uses the `agents/nn_agent.py` wrapper to call the Modal-hosted version of this model via a secure web endpoint.
